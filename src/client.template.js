@@ -112,7 +112,12 @@ window.__ModuleLoader__.load({
     /* ---------------- operations ---------------- */
 
     function operations (ctx) {
-      const service = () => ctx.sidebarRight
+      // cordis exposes services through ctx.get(); a plain property read throws.
+      const service = () => {
+        const svc = typeof ctx.get === 'function' ? ctx.get('sidebarRight') : ctx.sidebarRight
+        if (!svc) throw new Error('the right sidebar service is not available in this window')
+        return svc
+      }
       const adopt = args => { if (args && args.identity) window.__hbIdentity = args.identity }
       return {
         async open ({ url }) {
