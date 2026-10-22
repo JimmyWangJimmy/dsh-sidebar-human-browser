@@ -245,14 +245,39 @@ window.__ModuleLoader__.load({
             await sleep(Math.round(uniform(rand, 600, 1400)))
             return { scrolled: direction }
           }
+          if (typeof guest.focus === 'function') guest.focus()
+          const before = await evaluate(guest, 'window.scrollY')
           const seq = scrollSequence(Math.abs(distance), rand)
           const y = Math.round(uniform(rand, 200, 500))
+          let sent = 0
           for (const tick of seq) {
             await sleep(tick.delay)
-            guest.sendInputEvent({ type: 'mouseWheel', x: 300, y, deltaY: tick.deltaY, deltaX: 0, canScroll: true })
+            guest.sendInputEvent({
+              type: 'mouseWheel',
+              x: 300,
+              y,
+              deltaX: 0,
+              deltaY: tick.deltaY,
+              wheelTicksX: 0,
+              wheelTicksY: tick.deltaY / 120,
+              accelerationRatioX: 1,
+              accelerationRatioY: 1,
+              hasPreciseScrollingDeltas: true,
+              canScroll: true,
+            })
+            sent += Math.abs(tick.deltaY)
           }
           await sleep(Math.round(uniform(rand, 180, 620)))
-          return { ticks: seq.length, delta: seq.reduce((s, t) => s + t.deltaY, 0) }
+          const after = await evaluate(guest, 'window.scrollY')
+          // Some shells swallow synthetic wheel input; fall back to a scripted
+          // scroll so the gesture still lands (reported as fallback: true).
+          if (Math.abs(after - before) < 4 && direction !== 'top' && direction !== 'bottom') {
+            await evaluate(guest, `window.scrollBy({ top: ${distance === 0 ? 0 : Math.sign(distance) * sent}, behavior: 'smooth' })`)
+            await sleep(Math.round(uniform(rand, 300, 700)))
+            const fixed = await evaluate(guest, 'window.scrollY')
+            return { ticks: seq.length, delta: sent, fallback: true, moved: Math.round(fixed - before) }
+          }
+          return { ticks: seq.length, delta: sent, fallback: false, moved: Math.round(after - before) }
         },
 
         async eval ({ expression, tab }) {
