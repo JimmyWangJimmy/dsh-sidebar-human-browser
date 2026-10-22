@@ -39,3 +39,27 @@
 npm test            # 9 项分布断言
 node -e "import('./lib/human.js').then(H=>{const r=H.rng(20261022);console.log(H.clickDwell(r))})"
 ```
+
+---
+
+## 本插件实测（同一测试页，seed=42）
+
+| 指标 | 上游 0.3.0 | 本插件 0.1.0 | 人类基准 |
+|---|---|---|---|
+| 点击：mousedown→mouseup | 0.5 ms | **152.6 ms** | 60–220 ms |
+| 点击：mousemove 次数 | 2 | **7** | 20–40（视距离） |
+| 输入：keydown 次数 | **0** | **18**（18 字符） | = 字符数 |
+| 输入：按键间隔 | —（无事件） | 147–315 ms，中位 217 ms | 50–150 ms |
+| 滚动：wheel 事件 | 0 | 0（见下方限制） | 5–15 |
+| 滚动：实际位移 | 600 px（脚本） | **599 px** | 连续位移 |
+| `isTrusted` | true | true | true |
+
+### 滚动限制（环境所致，非代码）
+
+在 DSH Desktop 0.2.1-rc.2 的侧栏 `<webview>` 里，`sendInputEvent({ type: 'mouseWheel' })` 有两种表现，二者不可兼得：
+
+1. 只传 `deltaY` → 页面收到 `wheel` 事件（实测 10 次），但**不产生默认滚动**（`scrollY` 保持 0）
+2. 补上 `wheelTicksY` + `hasPreciseScrollingDeltas` → 合成器消费事件，页面收不到 DOM `wheel`，仍不滚动
+
+因此本插件采用「先发拟人 wheel 序列，检测到未位移时改用平滑脚本滚动」的兜底，并在返回值里标记 `fallback: true`。要做到「既产生 DOM wheel 事件又真实滚动」，需要 Electron 侧支持或走 CDP `Input.dispatchMouseEvent`。
+

@@ -100,6 +100,21 @@ The plugin needs the sidebar browser guest to exist — `human_open` creates the
 | `human_scroll` | inertial wheel gesture |
 | `human_eval` | evaluate JS (least human-looking tool — prefer snapshot/text) |
 
+## 真机实测 / Measured on device
+
+同一测试页、同一 seed（42），与上游 `dsh-sidebar-browser-cdp` 0.3.0 对比：
+
+| 指标 | 上游 | 本插件 | 人类基准 |
+|---|---|---|---|
+| 点击按下时长 | 0.5 ms | **152.6 ms** | 60–220 ms |
+| 点击移动次数 | 2 | **7** | 20–40 |
+| 输入 keydown | **0** | **18 / 18 字符** | = 字符数 |
+| 按键间隔 | 无事件 | 中位 **217 ms** | 50–150 ms |
+| 滚动位移 | 600 px | 599 px | 连续 |
+| `isTrusted` | true | true | true |
+
+滚动受 Electron webview 限制，详见 [docs/upstream-measurements.md](docs/upstream-measurements.md)。
+
 ## 行为数据 / Measured behaviour
 
 `npm test` (deterministic seeds):
