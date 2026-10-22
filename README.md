@@ -73,16 +73,21 @@ The engine (`lib/human.js`) is pure and deterministic: pass a `seed` and the sam
 
 ## 安装 / Install
 
+发布在 npm：**https://www.npmjs.com/package/dsh-sidebar-human-browser**
+
 ```
 DSH Desktop → Plugins → Add plugin → dsh-sidebar-human-browser → Install → Enable now → 新会话
 ```
 
-Or from a clone:
+或命令行：
 
 ```sh
-pnpm add link:$PWD          # inside ~/.dsh/profiles/desktop
-# add "dsh-sidebar-human-browser" to dsh.profile.bundles in that package.json
+cd ~/.dsh/profiles/desktop
+pnpm add dsh-sidebar-human-browser
+# 再把 "dsh-sidebar-human-browser" 加进该 package.json 的 dsh.profile.bundles
 ```
+
+安装后需要重启一次 DSH Desktop（插件在启动时加载）。
 
 The plugin needs the sidebar browser guest to exist — `human_open` creates the tab.
 
