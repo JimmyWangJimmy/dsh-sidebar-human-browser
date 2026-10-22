@@ -1,0 +1,28 @@
+{
+  "name": "dsh-sidebar-human-browser",
+  "version": "0.1.0",
+  "description": "Human-shaped browser control for DeepSeek Harness: Fitts-law pointer paths, press dwell, per-key typing with corrections, inertial scrolling, and a consistent fingerprint shim — drives DSH Desktop's built-in sidebar browser with no debug port.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./client": { "default": "./lib/client.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["lib", "src", "scripts", "cordis.patch.yml", "README.md", "CHANGELOG.md", "LICENSE"],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/human.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "platform": "web" }
+  },
+  "keywords": ["dsh-plugin", "deepseek-harness", "browser", "webview", "electron", "human-like", "automation"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/JimmyWangJimmy/dsh-sidebar-human-browser.git" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "@deepseek-ai/schemastery": "~3.18.4" },
+  "peerDependencies": { "@deepseek-ai/cordis": "^4.0.4", "@deepseek-ai/dsh-tools": "^0.2.0-rc.2" }
+}

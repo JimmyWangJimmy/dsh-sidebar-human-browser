@@ -1,0 +1,15 @@
+# Bundle layer for dsh-sidebar-human-browser.
+#
+# Mounts the human_* tools. The page is rendered by the shell's own Browser tab;
+# this plugin only adds model-facing tools plus the client half that drives the
+# sidebar <webview>. No debug port is involved.
+- insert:
+    - id: sidebar-human-browser
+      name: 'dsh-sidebar-human-browser'
+      config:
+        # Kept consistent with the UA-CH brands the shim reports.
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36'
+        platform: 'macOS'
+        version: '152.0.7977.130'
+        # false = leave the raw Electron identity untouched (useful for debugging)
+        fingerprint: true
